@@ -1,12 +1,12 @@
 import { Controller, Get } from '@nestjs/common';
-import { DelayService } from './delay.service';
+import { VehicleService } from './vehicle.service';
 import { WarsawVehiclePositionResponse } from '../generated/public-transport-api';
 import { VehicleVelocityResponse } from '../generated/logisat-api';
 
 @Controller('/api/v1')
-export class DelayController {
+export class VehicleController {
 
-  constructor(private delayService: DelayService ) {
+  constructor(private delayService: VehicleService ) {
   }
 
   @Get("/positions")

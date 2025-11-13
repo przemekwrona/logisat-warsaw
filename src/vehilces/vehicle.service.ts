@@ -15,7 +15,7 @@ import {
 } from '../client/warsaw-client/warsaw-stream-positions.service';
 
 @Injectable()
-export class DelayService {
+export class VehicleService {
   constructor(
     private warsawClientService: WarsawClientService,
     private warsawStreamPositionsService: WarsawStreamPositionsService) {

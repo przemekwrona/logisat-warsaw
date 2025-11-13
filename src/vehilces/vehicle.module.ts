@@ -1,15 +1,15 @@
 import { Module } from '@nestjs/common';
-import { DelayController } from './delay.controller';
-import { DelayService } from './delay.service';
+import { VehicleController } from './vehicle.controller';
+import { VehicleService } from './vehicle.service';
 import { WarsawClientModule } from '../client/warsaw-client/warsaw-client.module';
 
 @Module({
   imports: [
     WarsawClientModule
   ],
-  controllers: [DelayController],
+  controllers: [VehicleController],
   providers: [
-    DelayService
+    VehicleService
   ],
 })
-export class DelayModule {}
+export class VehicleModule {}
