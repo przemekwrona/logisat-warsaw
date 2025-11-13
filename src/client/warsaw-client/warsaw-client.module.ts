@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { WarsawClientService } from './warsaw-client.service';
 import { CacheModule } from '@nestjs/cache-manager';
+import { WarsawStreamPositionsService } from './warsaw-stream-positions.service';
 
 @Module({
   imports: [
@@ -9,10 +10,12 @@ import { CacheModule } from '@nestjs/cache-manager';
     })
   ],
   exports: [
-    WarsawClientService
+    WarsawClientService,
+    WarsawStreamPositionsService
   ],
   providers: [
-    WarsawClientService
+    WarsawClientService,
+    WarsawStreamPositionsService
   ]
 })
 export class WarsawClientModule {
