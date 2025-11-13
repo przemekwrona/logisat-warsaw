@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { WarsawClientService } from '../client/warsaw-client/warsaw-client.service';
 import {
   WarsawVehiclePosition,
@@ -10,12 +10,14 @@ import {
 } from '../generated/logisat-api';
 import moment, { Moment } from 'moment';
 import haversineDistance from 'haversine-distance';
+import { Cache, CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class DelayService {
-  private historicalPositions: Map<string, WarsawVehiclePosition> = new Map<string, WarsawVehiclePosition>();
-
-  constructor(private warsawClientService: WarsawClientService) {}
+  constructor(
+    private warsawClientService: WarsawClientService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache,
+  ) {}
 
   async getLastPositions(): Promise<WarsawVehiclePositionResponse> {
     return this.warsawClientService.getAllPositions();
@@ -25,57 +27,65 @@ export class DelayService {
     const lastPositions: WarsawVehiclePositionResponse =
       await this.getLastPositions();
 
-    console.log(this.historicalPositions)
+    const vehicleVelocities: VehicleVelocity[] = await Promise.all(
+      (lastPositions.result || []).map(async (currentPosition) => {
+        const historicalPosition =
+          await this.cacheManager.get<WarsawVehiclePosition>(
+            currentPosition.VehicleNumber,
+          );
 
-    const vehicleVelocity: VehicleVelocity[] =
-      lastPositions.result?.map((currentPositions: WarsawVehiclePosition) => {
-        const historicalPosition = this.historicalPositions.get(
-          currentPositions.VehicleNumber,
-        );
+        if (!historicalPosition) {
+          return {
+            vehicleNumber: currentPosition.VehicleNumber,
+            line: currentPosition.Lines || '',
+            velocity: 0,
+          };
+        }
 
+        const historicalTime = moment(historicalPosition.Time);
+        const currentTime = moment(currentPosition.Time);
 
-        const historicalTime: Moment = moment(historicalPosition?.Time);
-        const currentTime: Moment = moment(currentPositions?.Time);
-        const deltaTimeInSeconds = historicalTime.diff(currentTime, 'seconds');
+        const deltaTimeInSeconds = currentTime.diff(historicalTime, 'seconds');
 
+        if (deltaTimeInSeconds === 0) {
+          return {
+            vehicleNumber: currentPosition.VehicleNumber,
+            line: currentPosition.Lines || '',
+            velocity: 0,
+          };
+        }
 
         const distanceInMeters = haversineDistance(
           {
-            lat: historicalPosition?.Lat || 0.0,
-            lon: historicalPosition?.Lon || 0.0,
+            lat: historicalPosition.Lat || 0,
+            lon: historicalPosition.Lon || 0,
           },
           {
-            lat: currentPositions.Lat,
-            lon: currentPositions.Lon
+            lat: currentPosition.Lat,
+            lon: currentPosition.Lon,
           },
         );
 
-        const velocityMetersPerSeconds: number = distanceInMeters / deltaTimeInSeconds;
+        const velocityMetersPerSecond = Math.floor(distanceInMeters / deltaTimeInSeconds);
+
+        console.log(distanceInMeters + ' ' + deltaTimeInSeconds + ' ' + velocityMetersPerSecond);
 
         return {
-          vehicleNumber: currentPositions.VehicleNumber,
-          line: currentPositions.Lines || '',
-          velocity: ~~velocityMetersPerSeconds,
-        } as VehicleVelocity;
-      }) || [];
+          vehicleNumber: currentPosition.VehicleNumber,
+          line: currentPosition.Lines || '',
+          velocity: velocityMetersPerSecond,
+        };
+      }),
+    );
 
-    this.rebuildHistoricalPositions(lastPositions);
+    lastPositions.result?.forEach((vehicle: WarsawVehiclePosition) =>
+      this.cacheManager.set(vehicle.VehicleNumber, vehicle),
+    );
 
     const response: VehicleVelocityResponse = {
-      vehicles: vehicleVelocity,
+      vehicles: vehicleVelocities
     };
 
     return Promise.resolve(response);
-  }
-
-  private rebuildHistoricalPositions(
-    lastPositions: WarsawVehiclePositionResponse,
-  ): void {
-    this.historicalPositions = new Map<string, WarsawVehiclePosition>(
-      lastPositions.result?.map((vehicle: WarsawVehiclePosition) => [
-        vehicle.VehicleNumber,
-        vehicle,
-      ]),
-    );
   }
 }
