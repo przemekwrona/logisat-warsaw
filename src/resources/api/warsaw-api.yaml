@@ -1,0 +1,68 @@
+openapi: 3.0.3
+info:
+  title: Vehicle Position API
+  version: 1.0.0
+  description: >
+    This API provides real-time and historical data for vehicles, including
+    their line numbers, geographic positions, timestamps, and brigade identifiers.
+
+servers:
+  - url: https://api.example.com
+    description: Example production server
+
+paths:
+  /vehicles:
+    get:
+      summary: Get all vehicle positions
+      description: Returns a list of vehicles with their coordinates and details.
+      responses:
+        '200':
+          description: A list of vehicle position objects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VehiclePosition'
+
+components:
+  schemas:
+    VehiclePosition:
+      type: object
+      properties:
+        Lines:
+          type: string
+          example: "196"
+          description: Line number or route identifier
+        VehicleNumber:
+          type: string
+          example: "1001"
+          description: Unique identifier of the vehicle
+        Time:
+          type: string
+          format: date-time
+          example: "2025-11-13 09:49:55"
+          description: Timestamp of the position record
+        Lat:
+          type: number
+          format: float
+          example: 52.2346763
+          description: Latitude of the vehicle
+        Lon:
+          type: number
+          format: float
+          example: 21.1150961
+          description: Longitude of the vehicle
+        Brigade:
+          type: string
+          example: "03"
+          description: Brigade or operational group identifier
+      required:
+        - Lines
+        - VehicleNumber
+        - Time
+        - Lat
+        - Lon
