@@ -8,6 +8,7 @@ import {
   VehicleVelocity,
   VehicleVelocityResponse,
 } from '../generated/logisat-api';
+import moment, { Moment } from 'moment';
 
 @Injectable()
 export class DelayService {
@@ -31,6 +32,10 @@ export class DelayService {
         const historicalPosition = this.historicalPositions.get(currentPositions.VehicleNumber);
 
         const velocity: number = historicalPosition === null ? 0 : 20;
+
+        const historicalTime: Moment =moment(historicalPosition?.Time)
+        const currentTime: Moment =moment(currentPositions?.Time)
+        const deltaTime = historicalTime.diff(currentTime, "seconds");
 
         return {
           vehicleNumber: currentPositions.VehicleNumber,
