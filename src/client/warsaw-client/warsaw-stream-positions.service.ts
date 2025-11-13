@@ -6,14 +6,13 @@ import {
   WarsawVehiclePositionResponse,
 } from '../../generated/public-transport-api';
 import moment from 'moment/moment';
-import { CachedPositions } from '../../delay/delay.service';
 
 export interface CachedVehiclePositions {
   positions: WarsawVehiclePosition[];
 }
 
 export interface CachedVehicles {
-  vehicles: CachedPositions[];
+  vehicles: CachedVehiclePositions[];
 }
 
 @Injectable()
@@ -66,9 +65,6 @@ export class WarsawStreamPositionsService {
         return this.cache.get(cacheKey);
       }) || [],
     );
-
-    const a = await this.cache.get('vehicle-positions:vehicle:1414');
-    console.log(a);
 
     return Promise.resolve({
       vehicles: cachedPositions,
