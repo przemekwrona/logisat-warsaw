@@ -9,13 +9,11 @@ import {
   VehicleVelocityResponse,
 } from '../generated/logisat-api';
 import moment, { Moment } from 'moment';
+import haversineDistance from 'haversine-distance';
 
 @Injectable()
 export class DelayService {
-  private historicalPositions: Map<string, WarsawVehiclePosition> = new Map<
-    string,
-    WarsawVehiclePosition
-  >();
+  private historicalPositions: Map<string, WarsawVehiclePosition> = new Map<string, WarsawVehiclePosition>();
 
   constructor(private warsawClientService: WarsawClientService) {}
 
@@ -27,20 +25,37 @@ export class DelayService {
     const lastPositions: WarsawVehiclePositionResponse =
       await this.getLastPositions();
 
+    console.log(this.historicalPositions)
+
     const vehicleVelocity: VehicleVelocity[] =
       lastPositions.result?.map((currentPositions: WarsawVehiclePosition) => {
-        const historicalPosition = this.historicalPositions.get(currentPositions.VehicleNumber);
+        const historicalPosition = this.historicalPositions.get(
+          currentPositions.VehicleNumber,
+        );
 
-        const velocity: number = historicalPosition === null ? 0 : 20;
 
-        const historicalTime: Moment =moment(historicalPosition?.Time)
-        const currentTime: Moment =moment(currentPositions?.Time)
-        const deltaTime = historicalTime.diff(currentTime, "seconds");
+        const historicalTime: Moment = moment(historicalPosition?.Time);
+        const currentTime: Moment = moment(currentPositions?.Time);
+        const deltaTimeInSeconds = historicalTime.diff(currentTime, 'seconds');
+
+
+        const distanceInMeters = haversineDistance(
+          {
+            lat: historicalPosition?.Lat || 0.0,
+            lon: historicalPosition?.Lon || 0.0,
+          },
+          {
+            lat: currentPositions.Lat,
+            lon: currentPositions.Lon
+          },
+        );
+
+        const velocityMetersPerSeconds: number = distanceInMeters / deltaTimeInSeconds;
 
         return {
           vehicleNumber: currentPositions.VehicleNumber,
           line: currentPositions.Lines || '',
-          velocity: velocity,
+          velocity: ~~velocityMetersPerSeconds,
         } as VehicleVelocity;
       }) || [];
 
@@ -53,7 +68,9 @@ export class DelayService {
     return Promise.resolve(response);
   }
 
-  private rebuildHistoricalPositions(lastPositions: WarsawVehiclePositionResponse): void {
+  private rebuildHistoricalPositions(
+    lastPositions: WarsawVehiclePositionResponse,
+  ): void {
     this.historicalPositions = new Map<string, WarsawVehiclePosition>(
       lastPositions.result?.map((vehicle: WarsawVehiclePosition) => [
         vehicle.VehicleNumber,
