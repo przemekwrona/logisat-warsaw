@@ -21,11 +21,16 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/WarsawVehiclePositionResponse'
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VehiclePosition'
 
 components:
   schemas:
-    WarsawVehiclePosition:
+    VehiclePosition:
       type: object
       properties:
         Lines:
@@ -62,10 +67,26 @@ components:
         - Lat
         - Lon
 
-    WarsawVehiclePositionResponse:
+    VehicleVelocity:
       type: object
       properties:
-        result:
+        vehicles:
           type: array
           items:
-            $ref: '#/components/schemas/WarsawVehiclePosition'
+            $ref: '#/components/schemas/VehicleVelocity'
+
+    VehicleVelocityResponse:
+      type: object
+      properties:
+        line:
+          type: string
+          example: "196"
+          description: Line number or route identifier
+        vehicleNumber:
+          type: string
+          example: "1001"
+          description: Unique identifier of the vehicle
+        velocity:
+          type: integer
+          example: 30
+          description: Velocity set in km per h
