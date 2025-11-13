@@ -18,8 +18,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "generate:warsaw:api": "openapi-generator-cli generate -i ./src/resources/api/warsaw-api.yaml -g typescript -o ./src/generated/public-transport-api",
-    "generate:logisat:api": "openapi-generator-cli generate -i ./src/resources/api/logisat-api.yaml -g typescript -o ./src/generated/logisat-api",
+    "generate:warsaw:api": "openapi-generator-cli generate -i ./src/resources/api/warsaw-api.yaml -g typescript-axios -o ./src/generated/public-transport-api",
+    "generate:logisat:api": "openapi-generator-cli generate -i ./src/resources/api/logisat-api.yaml -g typescript-axios -o ./src/generated/logisat-api",
     "generate:api": "npm run generate:warsaw:api & npm run generate:logisat:api"
   },
   "dependencies": {

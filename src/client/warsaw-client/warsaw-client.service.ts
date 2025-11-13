@@ -11,6 +11,20 @@ export enum VehicleType {
 export class WarsawClientService {
   private POSITION_RESOURCE_KEY = 'f2e5503e927d-4ad3-9500-4ab9e55deb59';
 
+  async getAllPositions(): Promise<WarsawVehiclePositionResponse> {
+    return Promise.all([
+      this.getWarsawBusesPositions(),
+      this.getWarsawTramsPositions(),
+    ]).then((responses) => {
+      const buses = responses[0];
+      const trams = responses[1];
+
+      return {
+        result: [...(buses.result || []), ...(trams.result || [])],
+      } as WarsawVehiclePositionResponse;
+    });
+  }
+
   async getWarsawTramsPositions(): Promise<WarsawVehiclePositionResponse> {
     return this.getWarsawPositions(VehicleType.TRAMS);
   }

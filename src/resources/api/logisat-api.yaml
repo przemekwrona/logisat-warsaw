@@ -27,6 +27,22 @@ paths:
                     type: array
                     items:
                       $ref: '#/components/schemas/VehiclePosition'
+  /vehicles/velocity:
+    get:
+      summary: Get all vehicle positions
+      description: Returns a list of vehicles with their coordinates and details.
+      responses:
+        '200':
+          description: A list of vehicle position objects
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  result:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VehicleVelocityResponse'
 
 components:
   schemas:
@@ -67,7 +83,7 @@ components:
         - Lat
         - Lon
 
-    VehicleVelocity:
+    VehicleVelocityResponse:
       type: object
       properties:
         vehicles:
@@ -75,7 +91,7 @@ components:
           items:
             $ref: '#/components/schemas/VehicleVelocity'
 
-    VehicleVelocityResponse:
+    VehicleVelocity:
       type: object
       properties:
         line:
