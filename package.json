@@ -20,7 +20,8 @@
     "test:e2e": "jest --config ./test/jest-e2e.json",
     "generate:warsaw:api": "openapi-generator-cli generate -i ./src/resources/api/warsaw-api.yaml -g typescript-axios -o ./src/generated/public-transport-api",
     "generate:logisat:api": "openapi-generator-cli generate -i ./src/resources/api/logisat-api.yaml -g typescript-axios -o ./src/generated/logisat-api",
-    "generate:api": "npm run generate:warsaw:api & npm run generate:logisat:api"
+    "generate:api": "npm run generate:warsaw:api & npm run generate:logisat:api",
+    "db:update": "liquibase --defaultsFile=./liquibase/liquibase.properties update"
   },
   "dependencies": {
     "@nestjs/cache-manager": "^3.0.1",
