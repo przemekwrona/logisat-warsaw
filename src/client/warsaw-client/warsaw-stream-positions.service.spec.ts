@@ -42,7 +42,7 @@ describe('WarsawStreamPositionsService', () => {
 
   describe('getStreamOfPositions', () => {
     xit('should create cache entry if not present', async () => {
-      const vehicle: WarsawVehiclePosition = { VehicleNumber: '1', Time: new Date().toISOString() };
+      const vehicle: WarsawVehiclePosition = { VehicleNumber: '1', Lines: '182', Time: new Date().toISOString(), Lat: 52.1234, Lon: 21.5323 };
       const response: WarsawVehiclePositionResponse = { result: [vehicle] };
 
       mockWarsawClient.getAllPositions.mockResolvedValue(response);

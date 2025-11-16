@@ -3,6 +3,7 @@ import { UserService } from './user.service';
 import { Repository } from 'typeorm';
 import { AppUserEntity } from '../entities/user.entity';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { first, size } from 'lodash';
 
 describe('UserService', () => {
   let service: UserService;
@@ -10,16 +11,18 @@ describe('UserService', () => {
 
   const mockUsers: AppUserEntity[] = [
     {
-      id: 1,
+      app_user_id: 1,
       username: 'john',
       email: 'john@example.com',
+      password: 'welcome1',
       created_at: new Date('2023-01-01T12:00:00'),
       enabled: true,
     } as AppUserEntity,
     {
-      id: 2,
+      app_user_id: 2,
       username: 'adam',
       email: 'adam@example.com',
+      password: 'welcome2',
       created_at: new Date('2023-01-02T13:00:00'),
       enabled: false,
     } as AppUserEntity,
@@ -59,14 +62,14 @@ describe('UserService', () => {
       order: { username: 'DESC' },
     });
 
-    expect(result?.items.length).toBe(2);
+    expect(size(result.items)).toBe(2);
 
-    const first = result?.items[0];
-    expect(first.username).toBe('john');
-    expect(first.email).toBe('john@example.com');
-    expect(first.enabled).toBe(true);
+    const firstUser = first(result.items) || {};
+    expect(firstUser.username).toBe('john');
+    expect(firstUser.email).toBe('john@example.com');
+    expect(firstUser.enabled).toBe(true);
 
     // Check formatted date (yyyy-MM-DDTHH:mm:SS)
-    expect(first.created_at).toMatch('2023-01-01T12:00:00');
+    expect(firstUser.created_at).toMatch('2023-01-01T12:00:00');
   });
 });

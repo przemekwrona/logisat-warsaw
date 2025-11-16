@@ -4,6 +4,7 @@ import { WarsawClientService } from '../client/warsaw-client/warsaw-client.servi
 import { WarsawStreamPositionsService } from '../client/warsaw-client/warsaw-stream-positions.service';
 import { calculateVelocity } from './geo-utils';
 import { VehicleVelocityResponse } from '../generated/logisat-api';
+import { first, size } from 'lodash';
 
 jest.mock('./geo-utils', () => ({
   calculateVelocity: jest.fn(),
@@ -75,8 +76,8 @@ describe('VehicleService', () => {
 
     const result: VehicleVelocityResponse = await service.getVelocity();
 
-    expect(result?.vehicles?.length).toBe(1);
-    expect(result?.vehicles[0]).toEqual({
+    expect(size(result.vehicles)).toBe(1);
+    expect(first(result.vehicles)).toEqual({
       vehicleNumber: '123',
       line: '10',
       velocity: 5.5,
@@ -125,8 +126,8 @@ describe('VehicleService', () => {
 
     const result: VehicleVelocityResponse = await service.getVelocityByVehicle('200');
 
-    expect(result?.vehicles?.length).toBe(1);
-    expect(result?.vehicles[0]).toEqual({
+    expect(size(result.vehicles)).toBe(1);
+    expect(first(result.vehicles)).toEqual({
       vehicleNumber: '200',
       line: 'N12',
       velocity: 7.3,
