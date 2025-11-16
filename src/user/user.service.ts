@@ -3,6 +3,7 @@ import { Users, UsersResponse } from '../generated/logisat-api';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AppUserEntity } from '../entities/user.entity';
+import moment from 'moment/moment';
 
 @Injectable()
 export class UserService {
@@ -20,6 +21,10 @@ export class UserService {
     const items: Users[] = appUserEntities.map((appUser: AppUserEntity) => {
       const user: Users = {} as Users;
       user.username = appUser.username;
+      user.email = appUser.email;
+      user.created_at = moment(appUser.created_at).format('yyyy-MM-DDTHH:mm:SS')
+      user.enabled = appUser.enabled;
+
       return user;
     });
 

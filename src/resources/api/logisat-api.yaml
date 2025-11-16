@@ -135,3 +135,10 @@ components:
       properties:
         username:
           type: string
+        email:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        enabled:
+          type: boolean
