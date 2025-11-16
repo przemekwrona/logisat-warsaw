@@ -3,6 +3,7 @@ import { VehicleModule } from './vehilces/vehicle.module';
 import { UserModule } from './user/user.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { AppUserEntity } from './entities/user.entity';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
         username: config.get<string>('DB_USER'),
         password: config.get<string>('DB_PASS'),
         database: config.get<string>('DB_NAME'),
+        entities: [AppUserEntity],
         autoLoadEntities: true,
         synchronize: false,
       })
