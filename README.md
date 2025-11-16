@@ -25,6 +25,8 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+[![codecov](https://codecov.io/gh/przemekwrona/logisat-warsaw/graph/badge.svg?token=DQOLK347TY)](https://codecov.io/gh/przemekwrona/logisat-warsaw)
+
 ## Project setup
 
 ```bash
